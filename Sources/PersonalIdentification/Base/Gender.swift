@@ -23,6 +23,8 @@ public enum Gender: Sendable, Codable {
 
 extension Gender: RawRepresentable, CaseIterable {
     public init?(rawValue: String) {
+        guard rawValue.count == 1 else { return nil }
+
         switch rawValue.uppercased() {
         case "M": self = .male
         case "F": self = .female
