@@ -78,7 +78,7 @@ In this case, 1st Jan 1970 should be written as `700101`.
 
     `N_character` is the number representation of character, for `0-9` is itself, `A`=10, `B`=11, etc,. `W_i` is the weight in certain index.
 
-        W_i = 2 ^ (37 - i) % 36
+        W_i = 2 ^ (37 - i) % 37
 
 2. Calculate the remainder:
 

@@ -40,6 +40,6 @@ package func PIDCalculateFinalVerificationCode(of string: String) -> String {
 @inlinable
 package func PIDCalculateWeight(index: Int) -> Int {
     let cal1 = Double.pow(2, 37 - (index + 1))
-    let remainder = cal1.truncatingRemainder(dividingBy: 36)
+    let remainder = cal1.truncatingRemainder(dividingBy: 37)
     return Int(remainder)
 }
