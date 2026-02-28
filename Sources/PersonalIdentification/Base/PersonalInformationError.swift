@@ -7,23 +7,25 @@
 
 public enum PersonalInformationError: Error {
     case invalidMRZCode
-    
+
     case invalidComposition
     case invalidCharacter
     case invalidTotalLength(expected: Int)
     case invalidLength(line: Int)
     case unexpectedLetters(line: Int, column: Int, accepted: String)
-    
+
     // parse line 1
     case nameNotFound
     case nameSeparateError
-    
+
     // parse line 2
     case veriCodeUnvalidated(_ type: _VerificationCodeType, found: String)
-    
-    
+
     @inlinable
-    static func veriCodeUnvalidated(_ type: _VerificationCodeType, found: Character) -> Self {
+    static func veriCodeUnvalidated(
+        _ type: _VerificationCodeType,
+        found: Character
+    ) -> Self {
         return .veriCodeUnvalidated(type, found: String(found))
     }
 }
@@ -31,7 +33,7 @@ public enum PersonalInformationError: Error {
 extension PersonalInformationError: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .invalidMRZCode: 
+        case .invalidMRZCode:
             "Invalid MRZ Code."
         case .invalidComposition:
             #"""
@@ -53,7 +55,7 @@ extension PersonalInformationError: CustomStringConvertible {
             Invalid MRZ line length. Expeceted 37 characters. 
             Founded mismatch at line \#(line).
             """#
-            
+
         case .nameNotFound:
             #"""
             Person name not found at line 1.
@@ -80,13 +82,13 @@ extension PersonalInformationError: CustomStringConvertible {
 
 public enum _VerificationCodeType: Sendable, CustomStringConvertible {
     case cardID, dateOfBirth, personalID, final
-    
+
     public var description: String {
         switch self {
         case .cardID:
             "Card ID"
         case .dateOfBirth:
-            "Card of Birth"
+            "Date of Birth"
         case .personalID:
             "Personal ID"
         case .final:
