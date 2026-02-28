@@ -1,0 +1,15 @@
+//
+//  PINSignature.proto
+//  personal-identification
+//
+//  Created by Arkivili Collindort on 27/12/2025
+//
+
+syntax = "proto3";
+
+message PINSignature {
+    string family_name = 1;
+    string given_name = 2;
+    string department = 3;
+    string mrz = 9;
+}
