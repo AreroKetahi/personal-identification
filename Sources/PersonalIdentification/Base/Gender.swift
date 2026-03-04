@@ -8,7 +8,7 @@
 import Foundation
 
 /// Gender Implementation that supports *Personal Identification Guideline*.
-public enum Gender: Sendable, Codable {
+public enum Gender: Sendable, Codable, Hashable {
     /// Male, represent as "M".
     case male
     /// Female, represent as "F".

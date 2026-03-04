@@ -23,6 +23,10 @@ extension PersonalInformation {
             throw PersonalInformationError.invalidCharacter
         }
         
+        guard mrzString.count >= 74 else {
+            throw PersonalInformationError.invalidTotalLength(expected: 74)
+        }
+        
         let separaterIndex = mrzString.index(
             mrzString.startIndex,
             offsetBy: 37
@@ -94,7 +98,9 @@ extension PersonalInformation {
 
         let departmentID = String(parts[0])
         
-        let names = parts[1].split(separator: "<<")
+        let names = parts[1]
+            .trimmingCharacters(in: CharacterSet(charactersIn: "<"))
+            .split(separator: "<<")
         guard names.count >= 2 else {
             throw PersonalInformationError.nameSeparateError
         }
@@ -197,7 +203,8 @@ extension PersonalInformation {
         case "M": .male
         case "F": .female
         case "P": .preferNotToSay
-        default: .other
+        case "O": .other
+        default: .unknown(String(genderChar))
         }
         pointer = line2.index(after: pointer)
 
