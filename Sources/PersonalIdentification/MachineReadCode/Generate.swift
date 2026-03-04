@@ -26,10 +26,23 @@ extension PersonalInformation {
     /// - Returns: MRZ code line 1.
     @inlinable
     public func createMRZLine1Code() -> String {
-        let firstLine = "\(departmentID)<\(familyName)<<\(givenName.replacingOccurrences(of: " ", with: "<"))"
+        let asciiFamilyName = Self.asciiNormalizedName(familyName)
+        let asciiGivenName = Self.asciiNormalizedName(givenName)
+        let firstLine = "\(departmentID)<\(asciiFamilyName)<<\(asciiGivenName.replacingOccurrences(of: " ", with: "<"))"
         return firstLine
             .padding(toLength: 37, withPad: "<", startingAt: 0)
             .uppercased()
+    }
+}
+
+extension PersonalInformation {
+    @inlinable
+    static func asciiNormalizedName(_ name: String) -> String {
+        let normalized = name.folding(
+            options: [.diacriticInsensitive, .widthInsensitive],
+            locale: Locale(identifier: "en_US_POSIX")
+        )
+        return String(normalized.unicodeScalars.filter { $0.isASCII })
     }
 }
 

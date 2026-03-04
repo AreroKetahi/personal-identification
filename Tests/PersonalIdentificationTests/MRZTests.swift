@@ -101,6 +101,16 @@ func mrzParsingFromCombinedStringWithoutNewline() async throws {
     #expect(parsed.familyName == original.familyName)
 }
 
+@Test("MRZ encoding normalizes Latin diacritics to ASCII")
+func mrzEncodingNormalizesLatinDiacriticsToAscii() async throws {
+    let info = try makePersonalInformation(givenName: "Élodie", familyName: "García")
+    let line1 = info.createMRZLine1Code()
+
+    #expect(line1.contains("ELODIE"))
+    #expect(line1.contains("GARCIA"))
+    #expect(line1.unicodeScalars.allSatisfy { $0.isASCII })
+}
+
 @Test("MRZ parsing fails for invalid total length")
 func mrzParsingFailsForInvalidTotalLength() async throws {
     let mrz = "ABC"
