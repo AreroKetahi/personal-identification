@@ -5,7 +5,7 @@
 //  Created by Arkivili Collindort on 21/01/2026
 //
 
-public enum CodeColor: UInt8, CaseIterable {
+public enum CodeColor: UInt8, CaseIterable, Sendable {
     case white = 0
     case black = 1
     case red = 2
