@@ -26,9 +26,10 @@ extension PersonalInformation {
     /// - Returns: MRZ code line 1.
     @inlinable
     public func createMRZLine1Code() -> String {
+        let asciiDepartmentID = Self.asciiNormalizedDepartmentID(departmentID)
         let asciiFamilyName = Self.asciiNormalizedName(familyName)
         let asciiGivenName = Self.asciiNormalizedName(givenName)
-        let firstLine = "\(departmentID)<\(asciiFamilyName)<<\(asciiGivenName.replacingOccurrences(of: " ", with: "<"))"
+        let firstLine = "\(asciiDepartmentID)<\(asciiFamilyName)<<\(asciiGivenName.replacingOccurrences(of: " ", with: "<"))"
         return firstLine
             .padding(toLength: 37, withPad: "<", startingAt: 0)
             .uppercased()
@@ -42,7 +43,26 @@ extension PersonalInformation {
             options: [.diacriticInsensitive, .widthInsensitive],
             locale: Locale(identifier: "en_US_POSIX")
         )
-        return String(normalized.unicodeScalars.filter { $0.isASCII })
+        let allowed = CharacterSet.alphanumerics.union(.whitespaces)
+        return String(
+            normalized.unicodeScalars.filter {
+                $0.isASCII && allowed.contains($0)
+            }
+        )
+    }
+
+    @inlinable
+    static func asciiNormalizedDepartmentID(_ departmentID: String) -> String {
+        let normalized = departmentID.folding(
+            options: [.diacriticInsensitive, .widthInsensitive],
+            locale: Locale(identifier: "en_US_POSIX")
+        )
+        let allowed = CharacterSet.alphanumerics
+        return String(
+            normalized.unicodeScalars.filter {
+                $0.isASCII && allowed.contains($0)
+            }
+        )
     }
 }
 
@@ -52,7 +72,12 @@ extension PersonalInformation {
     /// - Returns: MRZ code line 2.
     @inlinable
     public func createMRZLine2Code() -> String {
-        var secondLine = "\(_cardIDWithPadding)"  // 8
+        let cardID = Self.asciiNormalizedIdentifier(cardID, maxLength: 8)
+        let personalID = Self.asciiNormalizedIdentifier(personalID, maxLength: 8)
+        let cardIDPadded = cardID.padding(toLength: 8, withPad: "<", startingAt: 0)
+        let personalIDPadded = personalID.padding(toLength: 8, withPad: "<", startingAt: 0)
+
+        var secondLine = "\(cardIDPadded)"  // 8
         let startIndex = secondLine.startIndex
         let endIndexOfCardId = secondLine.index(startIndex, offsetBy: 8)
         
@@ -84,7 +109,7 @@ extension PersonalInformation {
         secondLine.append(gender)  // 1
         
         secondLine.append(PIDCreateDate(of: validDate))  // 6
-        secondLine.append(_personalIDWithPadding)  // 8
+        secondLine.append(personalIDPadded)  // 8
         
         let startIndexOfPersonalId = secondLine.index(
             endIndexOfDOB,
@@ -107,14 +132,25 @@ extension PersonalInformation {
     }
 }
 
-package extension PersonalInformation {
-    @usableFromInline
-    var _cardIDWithPadding: String {
-        self.cardID.padding(toLength: 8, withPad: "<", startingAt: 0)
-    }
-    
-    @usableFromInline
-    var _personalIDWithPadding: String {
-        self.personalID.padding(toLength: 8, withPad: "<", startingAt: 0)
+extension PersonalInformation {
+    @inlinable
+    static func asciiNormalizedIdentifier(
+        _ identifier: String,
+        maxLength: Int
+    ) -> String {
+        let normalized = identifier.folding(
+            options: [.diacriticInsensitive, .widthInsensitive],
+            locale: Locale(identifier: "en_US_POSIX")
+        )
+        let allowed = CharacterSet.alphanumerics
+        let filtered = String(
+            normalized.unicodeScalars.filter {
+                $0.isASCII && allowed.contains($0)
+            }
+        )
+        if filtered.count <= maxLength {
+            return filtered
+        }
+        return String(filtered.prefix(maxLength))
     }
 }

@@ -21,13 +21,15 @@ public struct ColorSignatureCorrectionResult: Sendable {
     public let correctedCorrection: [CodeColor]
     public let correctedSegments: [Int]
     public let correctedSymbolCount: Int
-
+    
     public var packed: [CodeColor] {
         correctedSignature + correctedCorrection
     }
 }
 
 extension PersonalInformation {
+    /// Create color signature.
+    /// - Returns: Color signature only.
     public func colorSignature() -> [CodeColor] {
         let mrz = self.createMRZLine1Code() + self.createMRZLine2Code()
         
@@ -44,6 +46,8 @@ extension PersonalInformation {
         }
     }
     
+    /// Create color signature and its `GF(8)` correction code.
+    /// - Returns: Color signature and correction code.
     public func colorSignatureWithCorrectionCode() -> (signature: [CodeColor], correction: [CodeColor]) {
         let signatureColors: [CodeColor] = self.colorSignature()
         
@@ -70,6 +74,11 @@ extension PersonalInformation {
 }
 
 extension PersonalInformation {
+    /// Correct signature by correction code separately.
+    /// - Parameters:
+    ///   - signature: Color signature decoded data.
+    ///   - correction: Correction code decoded data.
+    /// - Returns: Correction result.
     public static func correctColorSignature(
         signature: [CodeColor],
         correction: [CodeColor]
@@ -162,7 +171,10 @@ extension PersonalInformation {
             correctedSymbolCount: correctedSymbolCount
         )
     }
-
+    
+    /// Correct signature by readed code.
+    /// - Parameter packed: All readed code.
+    /// - Returns: Correction result.
     public static func correctColorSignature(
         packed: [CodeColor]
     ) throws -> ColorSignatureCorrectionResult {
@@ -178,7 +190,10 @@ extension PersonalInformation {
         let correction = Array(packed.suffix(16))
         return try correctColorSignature(signature: signature, correction: correction)
     }
-
+    
+    /// Correct signature by readed code with unidentified field.
+    /// - Parameter packed: All readed code with unread data as `nil`.
+    /// - Returns: Correction result.
     public static func correctColorSignature(
         packed: [CodeColor?]
     ) throws -> ColorSignatureCorrectionResult {
@@ -195,6 +210,11 @@ extension PersonalInformation {
         return try correctColorSignature(signature: signature, correction: correction)
     }
 
+    /// Correct signature by readed correction code and unidentified field.
+    /// - Parameters:
+    ///   - signature: Color signature decoded data with unread data as `nil`.
+    ///   - correction: Correction code decoded data with unread data as `nil`.
+    /// - Returns: Correction result.
     public static func correctColorSignature(
         signature: [CodeColor?],
         correction: [CodeColor?]

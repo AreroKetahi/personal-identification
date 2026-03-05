@@ -59,6 +59,19 @@ Then, use ``PersonalInformation/createMRZCode()`` to generate a Machine Readable
 - ``PersonalInformation/verifySignature(_:for:with:)``
 - ``PersonalInformation/verifySignature(_:line1:line2:with:)``
 
+### Color Signature
+
+- ``CodeColor``
+
+- ``PersonalInformation/colorSignature()``
+- ``PersonalInformation/colorSignatureWithCorrectionCode()``
+
+- ``PersonalInformation/correctColorSignature(signature:correction:)-([CodeColor],_)``
+- ``PersonalInformation/correctColorSignature(signature:correction:)-([CodeColor?],_)``
+- ``PersonalInformation/correctColorSignature(packed:)-([CodeColor])``
+- ``PersonalInformation/correctColorSignature(packed:)-([CodeColor?])``
+
 ### Errors
 
 - ``PersonalInformationError``
+- ``ColorSignatureError``

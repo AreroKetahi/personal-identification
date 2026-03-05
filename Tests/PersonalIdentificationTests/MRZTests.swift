@@ -111,6 +111,24 @@ func mrzEncodingNormalizesLatinDiacriticsToAscii() async throws {
     #expect(line1.unicodeScalars.allSatisfy { $0.isASCII })
 }
 
+@Test("MRZ encoding excludes non-alphanumeric characters in names and department")
+func mrzEncodingExcludesNonAlphanumericCharactersInNamesAndDepartment() async throws {
+    let info = try makePersonalInformation(
+        givenName: "Jo-hn O'Neil",
+        familyName: "D'Arcy.",
+        departmentID: "DPT"
+    )
+    let line1 = info.createMRZLine1Code()
+
+    #expect(line1.contains("DPT<"))
+    #expect(line1.contains("DARCY"))
+    #expect(line1.contains("JOHN<ONEIL"))
+    #expect(!line1.contains("-"))
+    #expect(!line1.contains("'"))
+    #expect(!line1.contains("."))
+    #expect(!line1.contains("*"))
+}
+
 @Test("MRZ parsing fails for invalid total length")
 func mrzParsingFailsForInvalidTotalLength() async throws {
     let mrz = "ABC"
@@ -180,7 +198,7 @@ func mrzParsingFailsWhenCardIDCheckDigitInvalid() async throws {
 }
 
 @Test("MRZ parsing maps unknown gender to .unknown")
-func mrzParsingMapsUnknownGenderToOther() async throws {
+func mrzParsingMapsUnknownGenderToUnknown() async throws {
     let info = try makePersonalInformation()
     let line1 = info.createMRZLine1Code()
     let line2 = info.createMRZLine2Code()
